@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
 import { StoreProvider, useStore } from './lib/store'
 import Apply from './pages/Apply'
@@ -11,6 +11,9 @@ import MyHair from './pages/MyHair'
 import MyStylist from './pages/MyStylist'
 import Profile from './pages/Profile'
 import Rewards from './pages/Rewards'
+
+// Embedded builds (e.g. a sandboxed preview frame) can't own the URL, so route in memory.
+const Router = import.meta.env.VITE_MEMORY_ROUTER ? MemoryRouter : BrowserRouter
 
 function RequireMember({ children }: { children: ReactNode }) {
   const { member } = useStore()
@@ -26,7 +29,7 @@ function ScrollTop() {
 export default function App() {
   return (
     <StoreProvider>
-      <BrowserRouter>
+      <Router>
         <ScrollTop />
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -42,7 +45,7 @@ export default function App() {
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </StoreProvider>
   )
 }

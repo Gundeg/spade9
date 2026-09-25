@@ -39,6 +39,7 @@ function Book() {
   const [privateSuite, setPrivateSuite] = useState(editing?.privateSuite ?? false)
   const [done, setDone] = useState<Booking | null>(null)
   const [rescheduling, setRescheduling] = useState(false)
+  const [confirmCancel, setConfirmCancel] = useState(false)
 
   const barber = BARBERS.find((b) => b.id === barberId)!
   const chosen = SERVICES.filter((s) => serviceIds.includes(s.id))
@@ -91,7 +92,6 @@ function Book() {
 
   const doCancel = () => {
     if (!editing) return
-    if (!window.confirm('Cancel this appointment?')) return
     cancel(editing.id)
     haptic([30, 40, 30])
     toast('Appointment cancelled')
@@ -126,7 +126,15 @@ function Book() {
           <div className="summary-line"><span className="muted">When</span><span>{fmtDate(editing.start)} · {fmtTime(editing.start)}</span></div>
           <div className="row wrap">
             <button className="btn btn-solid" onClick={() => { setRescheduling(true); setSlot(null); go(2) }}>Reschedule</button>
-            <button className="btn btn-danger" onClick={doCancel}>Cancel appointment</button>
+            {confirmCancel ? (
+              <>
+                <span className="small muted">Cancel this appointment?</span>
+                <button className="btn btn-sm btn-danger" onClick={doCancel}>Yes, cancel</button>
+                <button className="btn btn-sm btn-ghost" onClick={() => setConfirmCancel(false)}>Keep it</button>
+              </>
+            ) : (
+              <button className="btn btn-danger" onClick={() => setConfirmCancel(true)}>Cancel appointment</button>
+            )}
           </div>
         </div>
         {toastNode}
